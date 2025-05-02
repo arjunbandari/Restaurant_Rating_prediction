@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Rating Predictor</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1s ease-in-out;
+        }
+        h1 {
+            color: #333;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #ff6b81;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #ff4757;
+        }
+        .hidden {
+            display: none;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍽️ Restaurant Rating Predictor</h1>
+        <label for="restaurant">Select a Restaurant:</label>
+        <select id="restaurant"></select>
+        <button onclick="getPrediction()">Predict Rating</button>
+        
+        <div id="result" class="hidden">
+            <h2>📊 Prediction Result</h2>
+            <p><strong>Restaurant:</strong> <span id="res-name"></span></p>
+            <p><strong>Location:</strong> <span id="res-location"></span></p>
+            <p><strong>Cuisine:</strong> <span id="res-cuisine"></span></p>
+            <p><strong>Cost for Two:</strong> ₹<span id="res-cost"></span></p>
+            <p><strong>Predicted Rating:</strong> ⭐ <span id="res-rating"></span></p>
+            <p><strong>Category:</strong> <span id="res-category"></span></p>
+            <p><strong>Sentiment:</strong> <span id="res-sentiment"></span></p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("/restaurants")
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById("restaurant");
+                    data.restaurants.forEach(name => {
+                        let option = document.createElement("option");
+                        option.value = name;
+                        option.textContent = name;
+                        select.appendChild(option);
+                    });
+                });
+        });
+
+        function getPrediction() {
+            const restaurant = document.getElementById("restaurant").value;
+            fetch("/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ restaurant })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("res-name").textContent = data.restaurant;
+                document.getElementById("res-location").textContent = data.location;
+                document.getElementById("res-cuisine").textContent = data.cuisine;
+                document.getElementById("res-cost").textContent = data.cost;
+                document.getElementById("res-rating").textContent = data.predicted_rating;
+                document.getElementById("res-category").textContent = data.rating_label;
+                document.getElementById("res-sentiment").textContent = data.sentiment;
+                document.getElementById("result").classList.remove("hidden");
+            });
+        }
+    </script>
+</body>
+</html>

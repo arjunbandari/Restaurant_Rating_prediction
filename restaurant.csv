@@ -1,0 +1,33 @@
+Restaurant_Name,Location,Cuisine_Type,Cost_for_Two,Online_Delivery,Book_Table,Average_Wait_Time,Staff_Service,Reviews,Rating
+Chutneys,Madhapur,Chinese,391,No,Yes,50,5,"Great food and ambiance!; Loved the dumplings.; Fast service.; Slightly expensive but worth it.; Amazing soup options.",3.2
+Rayalaseema Ruchulu,Jubilee Hills,Andhra,1690,Yes,Yes,37,2,"Slow service, decent taste.; Authentic Andhra flavors.; Spicy and delicious biryani.; Not great for vegetarians.; Good portion sizes.",2.7
+Mehfil,Gachibowli,South Indian,1255,No,Yes,16,3,"Loved the biryani!; Excellent tandoori chicken.; Good for family dining.; A bit crowded on weekends.; Great service overall.",3.6
+Olive Bistro,Jubilee Hills,Italian,1778,Yes,Yes,18,1,"Too expensive for the quality.; Amazing pizza and pasta.; Cozy ambiance, great for dates.; Service is a bit slow.; Love the desserts here.",3.0
+Flying Spaghetti Monster,Jubilee Hills,Italian,1751,No,Yes,17,2,"Friendly staff, quick delivery.; Pasta was undercooked.; Good wine selection.; Overpriced for the portion size.; Loved the ambiance!",3.5
+Mainland China,Hitech City,Chinese,808,No,Yes,21,2,"Average experience, nothing special.; Best dumplings in town.; Authentic Chinese taste.; Service needs improvement.; Good ambiance but noisy.",4.5
+Via Milano,Gachibowli,Italian,1075,Yes,Yes,43,4,"Amazing flavors!; Loved the lasagna.; Very authentic Italian food.; Bit on the expensive side.; Good for fine dining.",3.2
+Prego,Gachibowli,Italian,334,No,No,42,5,"Terrible wait time.; Good place for brunch.; Ambiance was nice but food was average.; Friendly staff but slow service.; Enjoyed the tiramisu.",2.8
+Bawarchi,Gachibowli,North Indian,505,Yes,Yes,57,3,"Good value for money.; Biryani was fantastic.; Crowded but worth the wait.; Chicken curry was amazing.; Service could be faster.",3.3
+Zafraan Exotica,Jubilee Hills,Chinese,1404,No,No,32,1,"Tasty but small portions.; Loved the rooftop seating.; Good for romantic dinners.; Service was excellent.; A bit expensive.",4.6
+Paradise Biryani,Madhapur,Biryani,1885,No,No,33,4,"Excellent service!; Biryani is a must-try.; Crowded but quick service.; Chicken dishes were great.; Pricey but worth it.",3.1
+Ohri's Ming's Court,Gachibowli,Chinese,1711,Yes,No,46,5,"Food was cold on delivery.; Good flavors, needs better packaging.; Tasty but took too long.; Worth the price.; Good variety in menu.",4.0
+Shah Ghouse,Jubilee Hills,Biryani,1325,No,Yes,44,4,"Cozy place, great taste.; Biryani is legendary.; Spicy food lovers will enjoy.; Parking is a problem.; Not much variety for vegetarians.",2.5
+Jewel of Nizam,Hitech City,North Indian,1321,Yes,Yes,53,5,"Overpriced and bland.; Fancy ambiance, average food.; Loved the kebabs.; Service was very slow.; Perfect place for royal dining.",3.3
+Taj Mahal Hotel,Madhapur,South Indian,1713,No,Yes,49,5,"Fast service, delicious!; Classic South Indian flavors.; Best filter coffee.; Loved the dosas.; Perfect for breakfast.",3.2
+Jonathan's Kitchen,Hitech City,Italian,865,Yes,Yes,31,3,"Mediocre food quality.; Loved the seafood pasta.; Good but not great service.; Ambiance was beautiful.; Nice place for a casual dinner.",2.9
+AB’s - Absolute Barbecue,Madhapur,North Indian,1429,Yes,No,36,5,"Fantastic dining experience!; Loved the live grill.; Great variety in starters.; Service was top-notch.; A bit expensive but worth it.",3.7
+Almond House,Jubilee Hills,Desserts,1800,No,Yes,44,4,"Bad hygiene, won’t return.; Excellent sweets and snacks.; Best place for Indian sweets.; Friendly staff.; Quick service.",3.6
+Minerva Coffee Shop,Banjara Hills,South Indian,1002,No,Yes,10,5,"Nice staff, good food.; Best idlis in town.; Loved the sambar.; Affordable and tasty.; Crowded during weekends.",4.1
+Ulavacharu,Madhapur,South Indian,701,Yes,Yes,44,3,"Long wait, average taste.; Authentic Andhra flavors.; Good for spicy food lovers.; Service could be faster.; Pricey but unique dishes.",3.1
+Over The Moon,Hitech City,North Indian,1029,No,Yes,46,3,"Superb quality and vibe!; Drinks were well-crafted.; Food was okay but expensive.; Great rooftop ambiance.; Perfect for weekend parties.",3.1
+Little Italy,Jubilee Hills,Italian,1879,No,Yes,56,4,"Disappointing experience.; Authentic Italian pizza.; Good collection of wines.; Service was a bit slow.; Loved the pasta options.",2.9
+Sri Kanya,Madhapur,Biryani,461,No,No,23,2,"Affordable and tasty!; Biryani was amazing.; Service was okay.; Good place for quick meals.; Not very spacious.",3.0
+Zuci Desserts,Banjara Hills,Desserts,501,Yes,Yes,12,2,"Slow and rude staff.; Best cakes and pastries.; Amazing coffee options.; Good variety in desserts.; Overpriced but delicious.",3.8
+Sicilia Banjara,Banjara Hills,Italian,1295,Yes,No,10,5,"Best Italian in town!; Loved the pizzas.; Cozy and elegant ambiance.; Service was quick.; Bit expensive but worth it.",3.4
+The Fisherman's Wharf,Gachibowli,Seafood,1800,No,Yes,42,3,"Great seafood dishes.; Ambiance was wonderful.; Service was okay.; Pricey but good quality.; Perfect for seafood lovers.",4.0
+Barbeque Nation,Madhapur,North Indian,1600,Yes,Yes,50,5,"Buffet was amazing.; Loved the live grill.; Excellent starters and desserts.; Friendly staff and great ambiance.; Good for family dining.",4.2
+Tatva,Hitech City,Vegetarian,1450,No,Yes,35,4,"Delicious vegetarian dishes.; Great ambiance.; Service was a bit slow.; Loved the desserts.; Good portion sizes.",3.5
+Amogham,Banjara Hills,Multi-Cuisine,1800,Yes,No,38,3,"Beautiful view and ambiance.; Food was decent.; Good place for family dinners.; Service could be better.; A bit expensive.",3.4
+Kritunga,Madhapur,Andhra,750,Yes,Yes,28,4,"Authentic spicy Andhra food.; Loved the meals.; Service was okay.; Bit crowded but worth it.; Affordable and tasty.",3.7
+TGI Fridays,Hitech City,American,2000,No,Yes,45,3,"Best burgers in town.; Great cocktails.; Service was a bit slow.; Good for weekend parties.; Pricey but worth it.",3.6
+The Water Front,Necklace Road,Multi-Cuisine,2200,No,Yes,40,5,"Amazing view of the lake.; Food was decent.; Great place for dates.; Service was excellent.; Pricey but good experience.",3.9

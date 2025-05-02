@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zomato Restaurant Rating Prediction</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('https://trippldee.com/assets/friendbook/images/defaults/banner.jpg') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Title Styling */
+        .title-container {
+            position: absolute;
+            top: 5%;
+            color: black;
+            font-size: 36px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: yellow;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            animation: moveTitle 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes moveTitle {
+            from { transform: translateX(-10px); }
+            to { transform: translateX(10px); }
+        }
+
+        /* Glowing Light Effect */
+        .light-effect {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.4) 10%, rgba(255, 0, 0, 0) 80%);
+            border-radius: 50%;
+            animation: glowEffect 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes glowEffect {
+            from { transform: scale(1); opacity: 0.5; }
+            to { transform: scale(1.5); opacity: 0.2; }
+        }
+
+        /* Glass Effect for Form */
+        .glass-container {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.2);
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.8s ease-in-out;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Moving Sub-Heading */
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: white;
+            text-transform: uppercase;
+            display: inline-block;
+            animation: float 3s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-10px); }
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            outline: none;
+            background: white;
+            color: black;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        select:hover {
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-custom {
+            background: #e50914;
+            color: white;
+            font-size: 18px;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: 0.3s;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .btn-custom:hover {
+            background: #b20710;
+            transform: scale(1.05);
+            box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Animated Title -->
+<div class="title-container">Restaurant Rating Prediction</div>
+
+<!-- Light Effect for Glow -->
+<div class="light-effect" style="top: 30%; left: 20%;"></div>
+<div class="light-effect" style="top: 60%; right: 20%;"></div>
+
+<!-- Glass Container for Form -->
+<div class="glass-container">
+    <h1><i class="fas fa-utensils"></i> Select a Restaurant</h1>
+    
+    <form action="/predict" method="post" class="space-y-4">
+        <select name="restaurant">
+            {% for restaurant in restaurants %}
+                <option value="{{ restaurant }}">{{ restaurant }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn-custom">
+            <i class="fas fa-chart-line"></i> Predict Rating
+        </button>
+    </form>
+    
+    <a href="/restaurant_finder" class="btn-custom mt-4">
+        <i class="fas fa-search"></i> Restaurant Finder
+    </a>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

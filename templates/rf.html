@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Finder</title>
+    <script src="https://unpkg.com/papaparse@latest/papaparse.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath fill="%23d1d5db" fill-opacity="0.1" d="M0 0h80v80H0zm8 8h64v64H8z"/%3E%3C/svg%3E'), linear-gradient(to right, #eff6ff, #e6f4f4);
+        }
+        .filter-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.7s ease-out;
+        }
+        .results-section {
+            margin-top: 2.5rem;
+        }
+        .restaurant-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #4f46e5;
+            animation: slideUp 0.6s ease-out forwards;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .restaurant-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(79, 70, 229, 0.2);
+        }
+        .error-message {
+            color: #dc2626;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fee2e2;
+            border-radius: 8px;
+        }
+        .ripple {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.3) 10%, transparent 10.01%);
+            animation: ripple 1.5s infinite ease-in-out;
+            margin: 1.5rem auto;
+        }
+        .shake-button:hover {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            60% { opacity: 1; transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes ripple {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(2.4); opacity: 0; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-4px); }
+            40% { transform: translateX(4px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .detail-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-6">
+    <header class="flex items-center mb-8">
+        <svg class="w-10 h-10 mr-3" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2">
+            <path d="M12 2a10 10 0 0 0-10 10h20A10 10 0 0 0 12 2zm0 6v4m-4-4h8"/>
+        </svg>
+        <h1 class="text-3xl font-bold text-gray-900">Restaurant Finder</h1>
+    </header>
+    
+    <div class="filter-section w-full max-w-4xl">
+        <form id="restaurant-filter" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <label for="location" class="block text-sm font-medium text-gray-800">Location</label>
+                <select id="location" name="location" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">All Locations</option>
+                    <option value="Madhapur">Madhapur</option>
+                    <option value="Jubilee Hills">Jubilee Hills</option>
+                    <option value="Gachibowli">Gachibowli</option>
+                    <option value="Hitech City">Hitech City</option>
+                    <option value="Banjara Hills">Banjara Hills</option>
+                    <option value="Necklace Road">Necklace Road</option>
+                </select>
+            </div>
+            <div>
+                <label for="cuisine" class="block text-sm font-medium text-gray-800">Cuisine Type</label>
+                <select id="cuisine" name="cuisine" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">All Cuisines</option>
+                    <option value="Chinese">Chinese</option>
+                    <option value="Andhra">Andhra</option>
+                    <option value="South Indian">South Indian</option>
+                    <option value="Italian">Italian</option>
+                    <option value="North Indian">North Indian</option>
+                    <option value="Biryani">Biryani</option>
+                    <option value="Desserts">Desserts</option>
+                    <option value="Seafood">Seafood</option>
+                    <option value="Vegetarian">Vegetarian</option>
+                    <option value="Multi-Cuisine">Multi-Cuisine</option>
+                    <option value="American">American</option>
+                </select>
+            </div>
+            <div>
+                <label for="cost" class="block text-sm font-medium text-gray-800">Cost for Two (Max)</label>
+                <select id="cost" name="cost" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">Any Price</option>
+                    <option value="500">Up to ₹500</option>
+                    <option value="1000">Up to ₹1000</option>
+                    <option value="1500">Up to ₹1500</option>
+                    <option value="2000">Up to ₹2000</option>
+                    <option value="2500">Up to ₹2500</option>
+                </select>
+            </div>
+            <div>
+                <label for="online_delivery" class="block text-sm font-medium text-gray-800">Online Delivery</label>
+                <select id="online_delivery" name="online_delivery" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">Any</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            <div>
+                <label for="book_table" class="block text-sm font-medium text-gray-800">Table Booking</label>
+                <select id="book_table" name="book_table" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">Any</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            <div class="md:col-span-3">
+                <button type="submit" class="w-full bg-teal-600 text-white py-3 px-6 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 shake-button transition-colors duration-200">Find Restaurants</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="results" class="results-section w-full max-w-4xl hidden">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800">Matching Restaurants</h2>
+        <div id="restaurant-list"></div>
+    </div>
+
+    <div id="loading" class="hidden">
+        <div class="ripple"></div>
+    </div>
+    <div id="error" class="error-message hidden text-lg"></div>
+
+    <script>
+        // Embedded CSV data (unchanged)
+        const csvData = {
+            'restaurant.csv': `Restaurant_Name,Location,Cuisine_Type,Cost_for_Two,Online_Delivery,Book_Table,Average_Wait_Time,Staff_Service,Reviews,Rating
+Chutneys,Madhapur,Chinese,391,No,Yes,50,5,"Great food and ambiance!; Loved the dumplings.; Fast service.; Slightly expensive but worth it.; Amazing soup options.",3.2
+Rayalaseema Ruchulu,Jubilee Hills,Andhra,1690,Yes,Yes,37,2,"Slow service, decent taste.; Authentic Andhra flavors.; Spicy and delicious biryani.; Not great for vegetarians.; Good portion sizes.",2.7
+Mehfil,Gachibowli,South Indian,1255,No,Yes,16,3,"Loved the biryani!; Excellent tandoori chicken.; Good for family dining.; A bit crowded on weekends.; Great service overall.",3.6
+Olive Bistro,Jubilee Hills,Italian,1778,Yes,Yes,18,1,"Too expensive for the quality.; Amazing pizza and pasta.; Cozy ambiance, great for dates.; Service is a bit slow.; Love the desserts here.",3.0
+Flying Spaghetti Monster,Jubilee Hills,Italian,1751,No,Yes,17,2,"Friendly staff, quick delivery.; Pasta was undercooked.; Good wine selection.; Overpriced for the portion size.; Loved the ambiance!",3.5
+Mainland China,Hitech City,Chinese,808,No,Yes,21,2,"Average experience, nothing special.; Best dumplings in town.; Authentic Chinese taste.; Service needs improvement.; Good ambiance but noisy.",4.5
+Via Milano,Gachibowli,Italian,1075,Yes,Yes,43,4,"Amazing flavors!; Loved the lasagna.; Very authentic Italian food.; Bit on the expensive side.; Good for fine dining.",3.2
+Prego,Gachibowli,Italian,334,No,No,42,5,"Terrible wait time.; Good place for brunch.; Ambiance was nice but food was average.; Friendly staff but slow service.; Enjoyed the tiramisu.",2.8
+Bawarchi,Gachibowli,North Indian,505,Yes,Yes,57,3,"Good value for money.; Biryani was fantastic.; Crowded but worth the wait.; Chicken curry was amazing.; Service could be faster.",3.3
+Zafraan Exotica,Jubilee Hills,Chinese,1404,No,No,32,1,"Tasty but small portions.; Loved the rooftop seating.; Good for romantic dinners.; Service was excellent.; A bit expensive.",4.6
+Paradise Biryani,Madhapur,Biryani,1885,No,No,33,4,"Excellent service!; Biryani is a must-try.; Crowded but quick service.; Chicken dishes were great.; Pricey but worth it.",3.1
+Ohri's Ming's Court,Gachibowli,Chinese,1711,Yes,No,46,5,"Food was cold on delivery.; Good flavors, needs better packaging.; Tasty but took too long.; Worth the price.; Good variety in menu.",4.0
+Shah Ghouse,Jubilee Hills,Biryani,1325,No,Yes,44,4,"Cozy place, great taste.; Biryani is legendary.; Spicy food lovers will enjoy.; Parking is a problem.; Not much variety for vegetarians.",2.5
+Jewel of Nizam,Hitech City,North Indian,1321,Yes,Yes,53,5,"Overpriced and bland.; Fancy ambiance, average food.; Loved the kebabs.; Service was very slow.; Perfect place for royal dining.",3.3
+Taj Mahal Hotel,Madhapur,South Indian,1713,No,Yes,49,5,"Fast service, delicious!; Classic South Indian flavors.; Best filter coffee.; Loved the dosas.; Perfect for breakfast.",3.2
+Jonathan's Kitchen,Hitech City,Italian,865,Yes,Yes,31,3,"Mediocre food quality.; Loved the seafood pasta.; Good but not great service.; Ambiance was beautiful.; Nice place for a casual dinner.",2.9
+AB’s - Absolute Barbecue,Madhapur,North Indian,1429,Yes,No,36,5,"Fantastic dining experience!; Loved the live grill.; Great variety in starters.; Service was top-notch.; A bit expensive but worth it.",3.7
+Almond House,Jubilee Hills,Desserts,1800,No,Yes,44,4,"Bad hygiene, won’t return.; Excellent sweets and snacks.; Best place for Indian sweets.; Friendly staff.; Quick service.",3.6
+Minerva Coffee Shop,Banjara Hills,South Indian,1002,No,Yes,10,5,"Nice staff, good food.; Best idlis in town.; Loved the sambar.; Affordable and tasty.; Crowded during weekends.",4.1
+Ulavacharu,Madhapur,South Indian,701,Yes,Yes,44,3,"Long wait, average taste.; Authentic Andhra flavors.; Good for spicy food lovers.; Service could be faster.; Pricey but unique dishes.",3.1
+Over The Moon,Hitech City,North Indian,1029,No,Yes,46,3,"Superb quality and vibe!; Drinks were well-crafted.; Food was okay but expensive.; Great rooftop ambiance.; Perfect for weekend parties.",3.1
+Little Italy,Jubilee Hills,Italian,1879,No,Yes,56,4,"Disappointing experience.; Authentic Italian pizza.; Good collection of wines.; Service was a bit slow.; Loved the pasta options.",2.9
+Sri Kanya,Madhapur,Biryani,461,No,No,23,2,"Affordable and tasty!; Biryani was amazing.; Service was okay.; Good place for quick meals.; Not very spacious.",3.0
+Zuci Desserts,Banjara Hills,Desserts,501,Yes,Yes,12,2,"Slow and rude staff.; Best cakes and pastries.; Amazing coffee options.; Good variety in desserts.; Overpriced but delicious.",3.8
+Sicilia Banjara,Banjara Hills,Italian,1295,Yes,No,10,5,"Best Italian in town!; Loved the pizzas.; Cozy and elegant ambiance.; Service was quick.; Bit expensive but worth it.",3.4
+The Fisherman's Wharf,Gachibowli,Seafood,1800,No,Yes,42,3,"Great seafood dishes.; Ambiance was wonderful.; Service was okay.; Pricey but good quality.; Perfect for seafood lovers.",4.0
+Barbeque Nation,Madhapur,North Indian,1600,Yes,Yes,50,5,"Buffet was amazing.; Loved the live grill.; Excellent starters and desserts.; Friendly staff and great ambiance.; Good for family dining.",4.2
+Tatva,Hitech City,Vegetarian,1450,No,Yes,35,4,"Delicious vegetarian dishes.; Great ambiance.; Service was a bit slow.; Loved the desserts.; Good portion sizes.",3.5
+Amogham,Banjara Hills,Multi-Cuisine,1800,Yes,No,38,3,"Beautiful view and ambiance.; Food was decent.; Good place for family dinners.; Service could be better.; A bit expensive.",3.4
+Kritunga,Madhapur,Andhra,750,Yes,Yes,28,4,"Authentic spicy Andhra food.; Loved the meals.; Service was okay.; Bit crowded but worth it.; Affordable and tasty.",3.7
+TGI Fridays,Hitech City,American,2000,No,Yes,45,3,"Best burgers in town.; Great cocktails.; Service was a bit slow.; Good for weekend parties.; Pricey but worth it.",3.6
+The Water Front,Necklace Road,Multi-Cuisine,2200,No,Yes,40,5,"Amazing view of the lake.; Food was decent.; Great place for dates.; Service was excellent.; Pricey but good experience.",3.9`,
+            's1.csv': `Restaurant_Name,Location,Cuisine_Type,Cost_for_Two,Online_Delivery,Book_Table,Average_Wait_Time,Staff_Service,Reviews,Rating
+Chutneys,Madhapur,Chinese,280,No,Yes,57,5,"Service was slow but food compensated for it.; Loved the ambiance, food was top-notch!",2.6
+Rayalaseema Ruchulu,Jubilee Hills,Andhra,1777,Yes,Yes,42,4,Average taste but quick service.; Could improve the food quality.,3.7
+Mehfil,Gachibowli,South Indian,1292,No,Yes,9,1,Great vegetarian options available.; Could improve the food quality.,3.2
+Olive Bistro,Jubilee Hills,Italian,1791,Yes,Yes,28,1,Fantastic service and great food!; Average taste but quick service.,3.8
+Flying Spaghetti Monster,Jubilee Hills,Italian,1884,No,Yes,11,5,Great vegetarian options available.; Service was slow but food compensated for it.,4.8
+Mainland China,Hitech City,Chinese,724,No,Yes,24,3,Average taste but quick service.; Could improve the food quality.,4.8
+Via Milano,Gachibowli,Italian,1184,Yes,Yes,46,5,"Loved the ambiance, food was top-notch!; Clean place and courteous staff.",3.3
+Prego,Gachibowli,Italian,403,No,No,44,1,Could improve the food quality.; Service was slow but food compensated for it.,3.2
+Bawarchi,Gachibowli,North Indian,339,Yes,Yes,62,4,"Loved the ambiance, food was top-notch!; Service was slow but food compensated for it.",2.5
+Zafraan Exotica,Jubilee Hills,Chinese,1281,No,No,34,2,Could improve the food quality.; Not worth the price. Too crowded.,2.0
+Paradise Biryani,Madhapur,Biryani,2082,No,No,42,4,"Clean place and courteous staff.; Mediocre experience, would not recommend.",4.5
+Ohri's Ming's Court,Gachibowli,Chinese,1760,Yes,No,47,4,Service was slow but food compensated for it.; Could improve the food quality.,3.6
+Shah Ghouse,Jubilee Hills,Biryani,1487,No,Yes,39,3,Great vegetarian options available.; Average taste but quick service.,3.1
+Jewel of Nizam,Hitech City,North Indian,1279,Yes,Yes,46,4,Service was slow but food compensated for it.; Could improve the food quality.,2.6
+Taj Mahal Hotel,Madhapur,South Indian,1880,No,Yes,58,2,"Could improve the food quality.; Mediocre experience, would not recommend.",2.0
+Jonathan's Kitchen,Hitech City,Italian,818,Yes,Yes,23,2,"Loved the ambiance, food was top-notch!; Not worth the price. Too crowded.",4.3
+AB’s - Absolute Barbecue,Madhapur,North Indian,1608,Yes,No,43,3,Not worth the price. Too crowded.; Service was slow but food compensated for it.,4.7
+Almond House,Jubilee Hills,Desserts,1870,No,Yes,39,2,Could improve the food quality.; Delightful experience. Will visit again!,3.8
+Minerva Coffee Shop,Banjara Hills,South Indian,1052,No,Yes,1,1,Great vegetarian options available.; Could improve the food quality.,3.4
+Ulavacharu,Madhapur,South Indian,745,Yes,Yes,53,4,Clean place and courteous staff.; Delightful experience. Will visit again!,2.4
+Over The Moon,Hitech City,North Indian,905,No,Yes,47,1,"Could improve the food quality.; Mediocre experience, would not recommend.",3.7
+Little Italy,Jubilee Hills,Italian,1931,No,Yes,46,1,"Delightful experience. Will visit again!; Mediocre experience, would not recommend.",4.7
+Sri Kanya,Madhapur,Biryani,609,No,No,16,2,Could improve the food quality.; Delightful experience. Will visit again!,4.7
+Zuci Desserts,Banjara Hills,Desserts,529,Yes,Yes,16,5,"Average taste but quick service.; Loved the ambiance, food was top-notch!",4.9
+Sicilia Banjara,Banjara Hills,Italian,1212,Yes,No,13,4,Clean place and courteous staff.; Great vegetarian options available.,2.3
+The Fisherman's Wharf,Gachibowli,Seafood,1859,No,Yes,42,5,Great vegetarian options available.; Delightful experience. Will visit again!,2.4
+Barbeque Nation,Madhapur,North Indian,1447,Yes,Yes,57,1,Service was slow but food compensated for it.; Not worth the price. Too crowded.,2.0
+Tatva,Hitech City,Vegetarian,1512,No,Yes,36,2,"Not worth the price. Too crowded.; Mediocre experience, would not recommend.",2.4
+Amogham,Banjara Hills,Multi-Cuisine,1698,Yes,No,40,3,Great vegetarian options available.; Delightful experience. Will visit again!,3.1
+Kritunga,Madhapur,Andhra,610,Yes,Yes,33,1,Clean place and courteous staff.; Average taste but quick service.,3.1
+TGI Fridays,Hitech City,American,2058,No,Yes,42,2,Fantastic service and great food!; Service was slow but food compensated for it.,4.3
+The Water Front,Necklace Road,Multi-Cuisine,2067,No,Yes,43,3,Average taste but quick service.; Great vegetarian options available.,4.4`,
+            's2.csv': `Restaurant_Name,Location,Cuisine_Type,Cost_for_Two,Online_Delivery,Book_Table,Average_Wait_Time,Staff_Service,Reviews,Rating
+Chutneys,Madhapur,Chinese,198,No,Yes,48,2,Clean place and courteous staff.; Great vegetarian options available.,2.4
+Rayalaseema Ruchulu,Jubilee Hills,Andhra,1868,Yes,Yes,37,5,Fantastic service and great food!; Average taste but quick service.,2.7
+Mehfil,Gachibowli,South Indian,1250,No,Yes,15,2,Could improve the food quality.; Clean place and courteous staff.,4.8
+Olive Bistro,Jubilee Hills,Italian,1660,Yes,Yes,28,5,Fantastic service and great food!; Average taste but quick service.,3.8
+Flying Spaghetti Monster,Jubilee Hills,Italian,1592,No,Yes,15,3,Fantastic service and great food!; Service was slow but food compensated for it.,3.8
+Mainland China,Hitech City,Chinese,976,No,Yes,25,4,Average taste but quick service.; Great vegetarian options available.,2.5
+Via Milano,Gachibowli,Italian,986,Yes,Yes,50,2,Great vegetarian options available.; Average taste but quick service.,3.5
+Prego,Gachibowli,Italian,317,No,No,37,4,Service was slow but food compensated for it.; Delightful experience. Will visit again!,2.6
+Bawarchi,Gachibowli,North Indian,702,Yes,Yes,48,2,"Could improve the food quality.; Loved the ambiance, food was top-notch!",4.1
+Zafraan Exotica,Jubilee Hills,Chinese,1429,No,No,27,4,Fantastic service and great food!; Could improve the food quality.,4.6
+Paradise Biryani,Madhapur,Biryani,2057,No,No,29,4,Could improve the food quality.; Service was slow but food compensated for it.,2.4
+Ohri's Ming's Court,Gachibowli,Chinese,1759,Yes,No,45,4,"Could improve the food quality.; Loved the ambiance, food was top-notch!",4.2
+Shah Ghouse,Jubilee Hills,Biryani,1369,No,Yes,41,1,"Loved the ambiance, food was top-notch!; Average taste but quick service.",3.5
+Jewel of Nizam,Hitech City,North Indian,1514,Yes,Yes,51,1,Could improve the food quality.; Fantastic service and great food!,3.3
+Taj Mahal Hotel,Madhapur,South Indian,1906,No,Yes,49,4,"Mediocre experience, would not recommend.; Service was slow but food compensated for it.",4.4
+Jonathan's Kitchen,Hitech City,Italian,1049,Yes,Yes,35,1,Average taste but quick service.; Clean place and courteous staff.,4.8
+AB’s - Absolute Barbecue,Madhapur,North Indian,1578,Yes,No,31,3,Could improve the food quality.; Service was slow but food compensated for it.,2.3
+Almond House,Jubilee Hills,Desserts,1834,No,Yes,54,3,"Delightful experience. Will visit again!; Mediocre experience, would not recommend.",2.5
+Minerva Coffee Shop,Banjara Hills,South Indian,1132,No,Yes,19,2,Fantastic service and great food!; Clean place and courteous staff.,3.0
+Ulavacharu,Madhapur,South Indian,541,Yes,Yes,48,3,Service was slow but food compensated for it.; Fantastic service and great food!,2.8
+Over The Moon,Hitech City,North Indian,854,No,Yes,53,1,Could improve the food quality.; Service was slow but food compensated for it.,4.8
+Little Italy,Jubilee Hills,Italian,2045,No,Yes,47,1,"Not worth the price. Too crowded.; Mediocre experience, would not recommend.",4.1
+Sri Kanya,Madhapur,Biryani,337,No,No,23,4,Could improve the food quality.; Clean place and courteous staff.,3.2
+Zuci Desserts,Banjara Hills,Desserts,595,Yes,Yes,7,1,"Could improve the food quality.; Loved the ambiance, food was top-notch!",2.9
+Sicilia Banjara,Banjara Hills,Italian,1292,Yes,No,19,5,Not worth the price. Too crowded.; Delightful experience. Will visit again!,4.2
+The Fisherman's Wharf,Gachibowli,Seafood,1886,No,Yes,39,4,Clean place and courteous staff.; Not worth the price. Too crowded.,4.9
+Barbeque Nation,Madhapur,North Indian,1484,Yes,Yes,53,2,"Mediocre experience, would not recommend.; Great vegetarian options available.",3.4
+Tatva,Hitech City,Vegetarian,1609,No,Yes,29,3,Could improve the food quality.; Average taste but quick service.,3.1
+Amogham,Banjara Hills,Multi-Cuisine,1934,Yes,No,33,1,"Not worth the price. Too crowded.; Loved the ambiance, food was top-notch!",4.0
+Kritunga,Madhapur,Andhra,638,Yes,Yes,38,5,"Clean place and courteous staff.; Loved the ambiance, food was top-notch!",2.2
+TGI Fridays,Hitech City,American,1819,No,Yes,48,3,Clean place and courteous staff.; Service was slow but food compensated for it.,2.3
+The Water Front,Necklace Road,Multi-Cuisine,2380,No,Yes,42,2,Fantastic service and great food!; Clean place and courteous staff.,3.9`
+        };
+
+        // Detail icons
+        const detailIcons = {
+            Location: `<svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`,
+            Cuisine: `<svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M11 2h2v5h5v3h-5v7h-2v-7H6V7h5V2z"/></svg>`,
+            Cost: `<svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`,
+            Delivery: `<svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M9 21c0 1.1-.9 2-2 2s-2-.9-2-2m10 0c0 1.1-.9 2-2 2s-2-.9-2-2m-5-7l3-3H5m11-4h6v3h-6zM3 4h8v3H3z"/></svg>`,
+            Table: `<svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H5V7h9v10z"/></svg>`,
+            Wait: `<svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13h-2v-2h2v2zm0-4h-2V7h2v4z"/></svg>`,
+            Service: `<svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>`,
+            Rating: `<svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`
+        };
+
+        // Parse CSV data with deduplication
+        function parseCSVs() {
+            let allData = [];
+            const seenRestaurants = new Set();
+            for (const [fileName, csv] of Object.entries(csvData)) {
+                try {
+                    const result = Papa.parse(csv, {
+                        header: true,
+                        skipEmptyLines: true,
+                        transformHeader: header => header.trim().replace(/^"|"$/g, ''),
+                        transform: (value, header) => {
+                            let cleaned = value.trim().replace(/^"|"$/g, '');
+                            if (header === 'Cost_for_Two' || header === 'Average_Wait_Time' || header === 'Staff_Service' || header === 'Rating') {
+                                return parseFloat(cleaned) || 0;
+                            }
+                            if (header === 'Online_Delivery' || header === 'Book_Table') {
+                                return cleaned.toLowerCase() === 'yes' ? 'Yes' : 'No';
+                            }
+                            return cleaned;
+                        }
+                    });
+                    if (result.errors.length > 0) {
+                        console.error(`Errors parsing ${fileName}:`, result.errors);
+                    }
+                    result.data.forEach(row => {
+                        if (!seenRestaurants.has(row['Restaurant_Name'])) {
+                            seenRestaurants.add(row['Restaurant_Name']);
+                            allData.push(row);
+                        }
+                    });
+                } catch (err) {
+                    console.error(`Error parsing ${fileName}:`, err);
+                }
+            }
+            return allData;
+        }
+
+        // Filter restaurants based on user input
+        function filterRestaurants(data, filters) {
+            return data.filter(row => {
+                const matchesLocation = !filters.location || row['Location'] === filters.location;
+                const matchesCuisine = !filters.cuisine || row['Cuisine_Type'] === filters.cuisine;
+                const matchesCost = !filters.cost || row['Cost_for_Two'] <= parseFloat(filters.cost);
+                const matchesDelivery = !filters.online_delivery || row['Online_Delivery'] === filters.online_delivery;
+                const matchesTable = !filters.book_table || row['Book_Table'] === filters.book_table;
+                return matchesLocation && matchesCuisine && matchesCost && matchesDelivery && matchesTable;
+            });
+        }
+
+        // Render restaurant cards
+        function renderRestaurants(restaurants) {
+            const restaurantList = document.getElementById('restaurant-list');
+            restaurantList.innerHTML = '';
+            
+            if (restaurants.length === 0) {
+                restaurantList.innerHTML = '<p class="text-gray-600 text-center text-lg">No restaurants match your criteria.</p>';
+                return;
+            }
+
+            restaurants.forEach((restaurant, index) => {
+                const card = document.createElement('div');
+                card.className = 'restaurant-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.innerHTML = `
+                    <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                        ${detailIcons.Cuisine}
+                        ${restaurant['Restaurant_Name']}
+                    </h3>
+                    <div class="detail-grid">
+                        <p class="text-gray-700">${detailIcons.Location} <strong>Location:</strong> ${restaurant['Location']}</p>
+                        <p class="text-gray-700">${detailIcons.Cuisine} <strong>Cuisine:</strong> ${restaurant['Cuisine_Type']}</p>
+                        <p class="text-gray-700">${detailIcons.Cost} <strong>Cost for Two:</strong> ₹${restaurant['Cost_for_Two']}</p>
+                        <p class="text-gray-700">${detailIcons.Delivery} <strong>Online Delivery:</strong> ${restaurant['Online_Delivery']}</p>
+                        <p class="text-gray-700">${detailIcons.Table} <strong>Table Booking:</strong> ${restaurant['Book_Table']}</p>
+                        <p class="text-gray-700">${detailIcons.Wait} <strong>Average Wait Time:</strong> ${restaurant['Average_Wait_Time']} mins</p>
+                        <p class="text-gray-700">${detailIcons.Service} <strong>Staff Service:</strong> ${restaurant['Staff_Service']}/5</p>
+                        <p class="text-gray-700">${detailIcons.Rating} <strong>Rating:</strong> ${restaurant['Rating']}/5</p>
+                    </div>
+                    <p class="text-gray-700 mt-4"><strong>Reviews:</strong> ${restaurant['Reviews'].split(';').join('; ')}</p>
+                `;
+                restaurantList.appendChild(card);
+            });
+        }
+
+        // Main initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('restaurant-filter');
+            const resultsDiv = document.getElementById('results');
+            const loadingDiv = document.getElementById('loading');
+            const errorDiv = document.getElementById('error');
+
+            // Parse data
+            let restaurantData = [];
+            try {
+                restaurantData = parseCSVs();
+                if (restaurantData.length === 0) {
+                    throw new Error('No data parsed from CSV files.');
+                }
+                console.log('Parsed restaurants:', restaurantData);
+            } catch (err) {
+                errorDiv.textContent = 'Error loading restaurant data. Please try again later.';
+                errorDiv.classList.remove('hidden');
+                console.error('Data parsing error:', err);
+                return;
+            }
+
+            // Handle form submission
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                loadingDiv.classList.remove('hidden');
+                resultsDiv.classList.add('hidden');
+                errorDiv.classList.add('hidden');
+
+                const filters = {
+                    location: document.getElementById('location').value,
+                    cuisine: document.getElementById('cuisine').value,
+                    cost: document.getElementById('cost').value,
+                    online_delivery: document.getElementById('online_delivery').value,
+                    book_table: document.getElementById('book_table').value
+                };
+
+                try {
+                    const filteredRestaurants = filterRestaurants(restaurantData, filters);
+                    console.log('Filtered restaurants:', filteredRestaurants);
+                    renderRestaurants(filteredRestaurants);
+                    resultsDiv.classList.remove('hidden');
+                } catch (err) {
+                    errorDiv.textContent = 'Error filtering restaurants. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                    console.error('Filtering error:', err);
+                } finally {
+                    loadingDiv.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

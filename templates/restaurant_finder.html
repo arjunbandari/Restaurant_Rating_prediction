@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Finder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"%3E%3Cpath fill="%23d1d5db" fill-opacity="0.1" d="M0 0h80v80H0zm8 8h64v64H8z"/%3E%3C/svg%3E'), linear-gradient(to right, #eff6ff, #e6f4f4);
+        }
+        .filter-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.7s ease-out;
+        }
+        .results-section {
+            margin-top: 2.5rem;
+        }
+        .restaurant-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #4f46e5;
+            animation: slideUp 0.6s ease-out forwards;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .restaurant-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 0 0 4px rgba(79, 70, 229, 0.2);
+        }
+        .error-message {
+            color: #dc2626;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #fee2e2;
+            border-radius: 8px;
+        }
+        .prompt-message {
+            color: #4b5563;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+        .ripple {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.3) 10%, transparent 10.01%);
+            animation: ripple 1.5s infinite ease-in-out;
+            margin: 1.5rem auto;
+        }
+        .shake-button:hover {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            60% { opacity: 1; transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes ripple {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(2.4); opacity: 0; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-4px); }
+            40% { transform: translateX(4px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        .detail-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-6">
+    <header class="flex items-center mb-8">
+        <svg class="w-10 h-10 mr-3" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2">
+            <path d="M12 2a10 10 0 0 0-10 10h20A10 10 0 0 0 12 2zm0 6v4m-4-4h8"/>
+        </svg>
+        <h1 class="text-3xl font-bold text-gray-900">Restaurant Finder</h1>
+    </header>
+    
+    <div class="filter-section w-full max-w-4xl">
+        <form action="/filter_restaurants" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <label for="location" class="block text-sm font-medium text-gray-800">Location</label>
+                <select id="location" name="location" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">All Locations</option>
+                    {% for location in locations %}
+                        <option value="{{ location }}">{{ location }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="cuisine" class="block text-sm font-medium text-gray-800">Cuisine Type</label>
+                <select id="cuisine" name="cuisine" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">All Cuisines</option>
+                    {% for cuisine in cuisines %}
+                        <option value="{{ cuisine }}">{{ cuisine }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="cost" class="block text-sm font-medium text-gray-800">Cost for Two (Max)</label>
+                <select id="cost" name="cost" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">Any Price</option>
+                    <option value="500">Up to ₹500</option>
+                    <option value="1000">Up to ₹1000</option>
+                    <option value="1500">Up to ₹1500</option>
+                    <option value="2000">Up to ₹2000</option>
+                    <option value="2500">Up to ₹2500</option>
+                </select>
+            </div>
+            <div>
+                <label for="online_delivery" class="block text-sm font-medium text-gray-800">Online Delivery</label>
+                <select id="online_delivery" name="online_delivery" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">Any</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            <div>
+                <label for="book_table" class="block text-sm font-medium text-gray-800">Table Booking</label>
+                <select id="book_table" name="book_table" class="mt-1 block w-full rounded-md border-gray-200 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500 text-gray-900 py-3 bg-white">
+                    <option value="">Any</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            <div class="md:col-span-3">
+                <button type="submit" class="w-full bg-teal-600 text-white py-3 px-6 rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 shake-button transition-colors duration-200">Find Restaurants</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="results" class="results-section w-full max-w-4xl {% if restaurants %}block{% else %}hidden{% endif %}">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800">Matching Restaurants</h2>
+        <div id="restaurant-list">
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% elif restaurants|length == 0 %}
+                <p class="text-gray-600 text-center text-lg">No restaurants match your criteria.</p>
+            {% else %}
+                {% for restaurant in restaurants %}
+                    <div class="restaurant-card">
+                        <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                            <svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M11 2h2v5h5v3h-5v7h-2v-7H6V7h5V2z"/></svg>
+                            {{ restaurant['Restaurant_Name'] }}
+                        </h3>
+                        <div class="detail-grid">
+                            <p class="text-gray-700"><svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> <strong>Location:</strong> {{ restaurant['Location'] }}</p>
+                            <p class="text-gray-700"><svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M11 2h2v5h5v3h-5v7h-2v-7H6V7h5V2z"/></svg> <strong>Cuisine:</strong> {{ restaurant['Cuisine_Type'] }}</p>
+                            <p class="text-gray-700"><svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg> <strong>Cost for Two:</strong> ₹{{ restaurant['Cost_for_Two'] }}</p>
+                            <p class="text-gray-700"><svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M9 21c0 1.1-.9 2-2 2s-2-.9-2-2m10 0c0 1.1-.9 2-2 2s-2-.9-2-2m-5-7l3-3H5m11-4h6v3h-6zM3 4h8v3H3z"/></svg> <strong>Online Delivery:</strong> {{ restaurant['Online_Delivery'] }}</p>
+                            <p class="text-gray-700"><svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H5V7h9v10z"/></svg> <strong>Table Booking:</strong> {{ restaurant['Book_Table'] }}</p>
+                            <p class="text-gray-700"><svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13h-2v-2h2v2zm0-4h-2V7h2v4z"/></svg> <strong>Average Wait Time:</strong> {{ restaurant['Average_Wait_Time'] }} mins</p>
+                            <p class="text-gray-700"><svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg> <strong>Staff Service:</strong> {{ restaurant['Staff_Service'] }}/5</p>
+                            <p class="text-gray-700"><svg class="detail-icon" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> <strong>Rating:</strong> {{ restaurant['Rating'] }}/5</p>
+                        </div>
+                        <p class="text-gray-700 mt-4"><strong>Reviews:</strong> {{ restaurant['Reviews'].split(';')|join('; ') }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    {% if not restaurants and not error %}
+        <div class="prompt-message w-full max-w-4xl">
+            Please select your preferences and click "Find Restaurants" to see matching restaurants.
+        </div>
+    {% endif %}
+
+    <div id="loading" class="hidden">
+        <div class="ripple"></div>
+    </div>
+    {% if error %}
+        <div id="error" class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <a href="/" class="mt-6 inline-block bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700">Back to Home</a>
+</body>
+</html>
